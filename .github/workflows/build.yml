@@ -1,0 +1,64 @@
+name: Build
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-2022
+    timeout-minutes: 60
+
+    env:
+      CHERE_INVOKING: 1
+      WINFSP_URL: https://github.com/winfsp/winfsp/releases/download/v2.1/winfsp-2.1.25156.msi
+      WIX_URL: https://github.com/wixtoolset/wix3/releases/download/wix3141rtm/wix314-binaries.zip
+
+    defaults:
+      run:
+        shell: C:\cygwin\bin\bash.exe --login -o igncr -eo pipefail '{0}'
+
+    steps:
+      # Patches are applied with `patch --binary`; keep LF line endings.
+      - name: Disable CRLF conversion
+        shell: pwsh
+        run: git config --global core.autocrlf false
+
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install WinFsp
+        shell: pwsh
+        run: |
+          Invoke-WebRequest $env:WINFSP_URL -OutFile winfsp.msi
+          Start-Process msiexec -Wait -ArgumentList '/i winfsp.msi /qn /norestart ADDLOCAL=ALL'
+
+      - name: Install WiX 3
+        shell: pwsh
+        run: |
+          Invoke-WebRequest $env:WIX_URL -OutFile wix.zip
+          Expand-Archive wix.zip -DestinationPath C:\wix\bin
+          "WIX=C:\wix\" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - uses: cygwin/cygwin-install-action@v4
+        with:
+          platform: x86_64
+          packages: gcc-core,binutils,make,meson,ninja,patch,git,pkg-config,libglib2.0-devel,openssh
+          add-to-path: false
+
+      - name: Install cygfuse
+        run: sh "/cygdrive/c/Program Files (x86)/WinFsp/opt/cygfuse/install.sh"
+
+      - name: Build
+        run: |
+          cd "$(cygpath -u "$GITHUB_WORKSPACE")"
+          git config --global --add safe.directory '*'
+          make
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sshfs-win-msi
+          path: .build/x64/dist/*.msi
+          if-no-files-found: error
