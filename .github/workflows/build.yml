@@ -25,7 +25,7 @@ jobs:
         shell: pwsh
         run: git config --global core.autocrlf false
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           submodules: recursive
 
@@ -57,7 +57,7 @@ jobs:
           git config --global --add safe.directory '*'
           make
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: sshfs-win-msi
           path: .build/x64/dist/*.msi
