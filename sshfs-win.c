@@ -195,6 +195,7 @@ static int do_svc(int argc, char *argv[])
     "-oStrictHostKeyChecking=no",       \
     "-oServerAliveInterval=15",         \
     "-oServerAliveCountMax=3",          \
+    "-oConnectTimeout=10",              \
     "-oreconnect",                      \
     "-ono_contain_symlinks"
 
