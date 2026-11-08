@@ -57,7 +57,7 @@ jobs:
           git config --global --add safe.directory '*'
           make
 
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         with:
           name: sshfs-win-msi
           path: .build/x64/dist/*.msi

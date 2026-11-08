@@ -192,7 +192,11 @@ static int do_svc(int argc, char *argv[])
     "-ofstypename=SSHFS",               \
     "-o ssh_command=/usr/bin/ssh.exe",  \
     "-oUserKnownHostsFile=/dev/null",   \
-    "-oStrictHostKeyChecking=no"
+    "-oStrictHostKeyChecking=no",       \
+    "-oServerAliveInterval=15",         \
+    "-oServerAliveCountMax=3",          \
+    "-oreconnect",                      \
+    "-ono_contain_symlinks"
 
     if (3 > argc || 200 < argc)
         usage();
