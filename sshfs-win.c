@@ -197,7 +197,8 @@ static int do_svc(int argc, char *argv[])
     "-oServerAliveCountMax=3",          \
     "-oConnectTimeout=10",              \
     "-oreconnect",                      \
-    "-ono_contain_symlinks"
+    "-ono_contain_symlinks",            \
+    "-omax_read=65536,max_write=65536"
 
     if (3 > argc || 200 < argc)
         usage();
@@ -308,6 +309,7 @@ static int do_svc(int argc, char *argv[])
             snprintf(idmap, sizeof idmap, "-ouid=%d,gid=%d", passwd->pw_uid, passwd->pw_gid);
     }
 
+    /* max_conns is not supported by sshfs together with password_stdin */
     if (1 == reg_get(cls, "Credentials"))
         snprintf(authmeth, sizeof authmeth,
             "-opassword_stdin,password_stdout");
@@ -315,11 +317,11 @@ static int do_svc(int argc, char *argv[])
     {
         opt_escape(passwd->pw_dir, escaped, sizeof escaped);
         snprintf(authmeth, sizeof authmeth,
-            "-oPreferredAuthentications=publickey,IdentityFile=\"%s/.ssh/id_rsa\"", escaped);
+            "-oPreferredAuthentications=publickey,IdentityFile=\"%s/.ssh/id_rsa\",max_conns=4", escaped);
     }
     else
         snprintf(authmeth, sizeof authmeth,
-            "-oPreferredAuthentications=publickey");
+            "-oPreferredAuthentications=publickey,max_conns=4");
 
     char *sshfs_argv[256] =
     {
