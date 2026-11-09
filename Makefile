@@ -3,7 +3,7 @@ MyCompanyName = "Navimatics LLC"
 MyDescription = "SSHFS for Windows"
 # BuildNum: CI run number (empty for local builds); identifies same-day builds
 BuildNum ?= $(GITHUB_RUN_NUMBER)
-MyProductVersion = "2026.1 Beta$(if $(BuildNum), build $(BuildNum))"
+MyProductVersion = "2026.1 Beta 2$(if $(BuildNum), build $(BuildNum))"
 MyProductStage = "Beta"
 MyVersion = 3.7.$(shell date '+%y%j')$(if $(BuildNum),.$(BuildNum))
 ifeq ($(shell uname -m),x86_64)

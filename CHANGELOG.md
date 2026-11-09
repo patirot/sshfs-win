@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026.1 Beta 2 (2026-11-09)
+
+- Release commits and tag are signed (GitHub "Verified").
+- README points to this fork's releases and documents the new default
+  options and build dependencies.
+- CI retries WinFsp and WiX downloads.
+
 ## 2026.1 Beta (2026-11-09)
 
 Unofficial build from the `patirot/sshfs-win` fork. The MSI is not code signed.
