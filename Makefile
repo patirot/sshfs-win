@@ -20,7 +20,7 @@ SrcDir	= $(BldDir)/src
 RootDir	= $(BldDir)/root
 WixDir	= $(BldDir)/wix
 Status	= $(BldDir)/status
-BinExtra= ssh #bash ls mount
+BinExtra= ssh cygwin-console-helper #bash ls mount
 
 export PATH := $(shell cygpath -au "$$WIX")/bin:$(PATH)
 
