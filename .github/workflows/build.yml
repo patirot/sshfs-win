@@ -32,13 +32,13 @@ jobs:
       - name: Install WinFsp
         shell: pwsh
         run: |
-          Invoke-WebRequest $env:WINFSP_URL -OutFile winfsp.msi
+          Invoke-WebRequest $env:WINFSP_URL -OutFile winfsp.msi -MaximumRetryCount 5 -RetryIntervalSec 15
           Start-Process msiexec -Wait -ArgumentList '/i winfsp.msi /qn /norestart ADDLOCAL=ALL'
 
       - name: Install WiX 3
         shell: pwsh
         run: |
-          Invoke-WebRequest $env:WIX_URL -OutFile wix.zip
+          Invoke-WebRequest $env:WIX_URL -OutFile wix.zip -MaximumRetryCount 5 -RetryIntervalSec 15
           Expand-Archive wix.zip -DestinationPath C:\wix\bin
           "WIX=C:\wix\" | Out-File -FilePath $env:GITHUB_ENV -Append
 
