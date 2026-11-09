@@ -7,11 +7,8 @@
 
 <p align="center">
     <b>Download</b><br>
-    <a href="https://github.com/billziss-gh/sshfs-win/releases/latest">
-        <img src="https://img.shields.io/github/release/billziss-gh/sshfs-win.svg?label=stable&style=for-the-badge"/>
-    </a>
-    <a href="https://github.com/billziss-gh/sshfs-win/releases">
-        <img src="https://img.shields.io/github/release/billziss-gh/sshfs-win/all.svg?label=latest&colorB=e52e4b&style=for-the-badge"/>
+    <a href="https://github.com/patirot/sshfs-win/releases">
+        <img src="https://img.shields.io/github/release/patirot/sshfs-win/all.svg?label=latest&colorB=e52e4b&style=for-the-badge"/>
     </a>
     <!-- a href="https://chocolatey.org/packages/sshfs">
         <img src="https://img.shields.io/badge/choco-install%20sshfs-black.svg?style=for-the-badge"/>
@@ -36,12 +33,14 @@
 
 SSHFS-Win is a minimal port of [SSHFS](https://github.com/libfuse/sshfs) to Windows. Under the hood it uses [Cygwin](https://cygwin.com) for the POSIX environment and [WinFsp](https://github.com/billziss-gh/winfsp) for the FUSE functionality.
 
+> This is an unofficial fork of [winfsp/sshfs-win](https://github.com/winfsp/sshfs-win) with SSHFS 3.7.6, an updated Cygwin/OpenSSH runtime and connection-stability defaults. See [CHANGELOG.md](CHANGELOG.md). Its installers are not code signed.
+
 ## Installation
 
 - Install the latest version of [WinFsp](https://github.com/billziss-gh/winfsp/releases/latest).
-- Install the latest version of [SSHFS-Win](https://github.com/billziss-gh/sshfs-win/releases). Choose the x64 or x86 installer according to your computer's architecture.
+- Install the latest version of [SSHFS-Win](https://github.com/patirot/sshfs-win/releases) (x64). Installing a newer version upgrades an existing installation, including the official release, in place.
 
-Both can also be easily installed with [WinGet](https://github.com/microsoft/winget-cli):
+WinFsp and the official SSHFS-Win release can also be installed with [WinGet](https://github.com/microsoft/winget-cli):
 
 ```console
 winget install SSHFS-Win.SSHFS-Win
@@ -229,9 +228,9 @@ When using mapped network drives created in Windows Explorer or using "net use",
 
 ## Preventing timeouts
 
-A connection will timeout after some minutes when nothing is transferred. To prevent this, pass e.g. "-o ServerAliveInterval=30" as SSHFS_OPTIONS. A keep-alive request is sent every 30 seconds.
+Map network drive or "net use": no action needed. These mounts use `ServerAliveInterval=15`, `ServerAliveCountMax=3`, `ConnectTimeout=10` and `reconnect` by default, so a dead connection (e.g. after sleep or a network change) is detected and re-established instead of hanging the drive.
 
-Map network drive or "net use": Use the provided "ServerAliveInterval.reg" registry patch.
+`sshfs-win cmd` and GUI front ends that run `sshfs.exe` directly do not get these defaults. Pass e.g. "-o ServerAliveInterval=15,reconnect" as SSHFS_OPTIONS, or add `ServerAliveInterval` to `%USERPROFILE%\.ssh\config`.
 
 ## Setting looser permissions for new files and directories
 
@@ -253,12 +252,16 @@ This is a simple project:
 
 In order to build SSHFS-Win you will need Cygwin and the following Cygwin packages:
 
+- binutils
 - gcc-core
 - git
 - libglib2.0-devel
 - make
 - meson
+- ninja
+- openssh
 - patch
+- pkg-config
 
 You will also need:
 
@@ -276,6 +279,8 @@ To build:
 - Change directory to the sshfs-win repository.
 - Issue `make`.
 - The sshfs-win repository includes the upstream SSHFS project as a submodule; if you have not already done so, you must initialize it with `git submodule update --init sshfs`.
+
+The GitHub Actions workflow in `.github/workflows/build.yml` performs the same build and uploads the MSI as an artifact.
 
 ## License
 
